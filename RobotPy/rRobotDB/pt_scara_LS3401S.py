@@ -101,14 +101,10 @@ motor_installation = [
 motorPara = list(map(load_motor_db, motor_installation))
 
 frictionPara = [
-#    {"nest": "link1", "friction": [7.35, 1.02, 1]},
-#    {"nest": "link2", "friction": [8.58, 1.47, 1]},
-#    {"nest": "link3", "friction": [2.21, 0.78, 1]},
-#    {"nest": "link4", "friction": [0.63, 0.14, 1]},
-    {"nest": "link1", "friction": [0.0, 0.0, 1.0]},
-    {"nest": "link2", "friction": [0.0, 0.0, 1.0]},
-    {"nest": "link3", "friction": [0.0, 0.0, 1.0]},
-    {"nest": "link4", "friction": [0.0, 0.0, 1.0]},
+    {"nest": "link1", "friction": [6.1667, 0.15915, 1]},
+    {"nest": "link2", "friction": [6.1667, 0.15915, 1]},
+    {"nest": "link3", "friction": [0., 0., 1]},
+    {"nest": "link4", "friction": [0., 0., 1]},
 ]
 
 gear_installation = [
