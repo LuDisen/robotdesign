@@ -279,7 +279,7 @@ class Dynamics(Kinematics):
         for i, body in enumerate(self.bodies):
             body.ne_fwd_iter(
                 q_dot[i], q_ddot[i],
-                omega_im1, alpha_im1, acc_e_im1
+                omega_im1, alpha_im1, acc_e_im1, self.joints[i].mode
             )
             # prepare for next iter
             omega_im1 = body.omega

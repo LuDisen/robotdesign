@@ -8,7 +8,7 @@ import numpy as np
 import scipy.linalg as li
 from utility.u_math import mass_combine, twist_coordinate, tensor
 from utility.u_math import calc_friction, curve_min, pure_cross
-from utility.u_math import fast_fwd_ne, fast_bwd_ne
+from utility.u_math import fast_fwd_ne_revolute, fast_fwd_ne_prismatic, fast_bwd_ne
 # from numba import jitclass
 # from numba import int32, float32
 
@@ -87,7 +87,7 @@ class Body:
         self.head_gl = head_gl
         self.tail_gl = tail_gl
 
-    def ne_fwd_iter(self, q_dot, q_ddot, omega_im1, alpha_im1, acc_e_im1):
+    def ne_fwd_iter(self, q_dot, q_ddot, omega_im1, alpha_im1, acc_e_im1, mode=0):
         """
         Newton-Euler forward recursive step
         All calculations are in World Coordinate Sys
@@ -110,6 +110,11 @@ class Body:
         # # Calculate body end (flange2) linear acc (WCS)
         # self.acc_e = acc_e_im1 + X(self.alpha, -self.r_ht) +\
         #              X(self.omega, X(self.omega, -self.r_ht))
+
+        if mode == 0:
+            fast_fwd_ne = fast_fwd_ne_revolute
+        else:
+            fast_fwd_ne = fast_fwd_ne_prismatic
         self.omega, self.alpha, self.acc, self.acc_e = fast_fwd_ne(
             self.z_gl, self.r_hc, self.r_ht,
             q_dot, q_ddot, omega_im1, alpha_im1, acc_e_im1

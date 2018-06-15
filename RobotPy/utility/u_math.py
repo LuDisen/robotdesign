@@ -266,11 +266,11 @@ def pure_cross(a, b):
 
 
 @numba.jit(nopython=True)
-def fast_fwd_ne(
+def fast_fwd_ne_revolute(
         z_gl, r_hc, r_ht, q_dot, q_ddot, omega_im1, alpha_im1, acc_e_im1
     ):
     """
-    Newton Euler operation in the forward iteration
+    Newton Euler operation in the forward iteration - revolute joint
     :param z_gl: axis in global frame, 1 * 3 vector
     :param r_hc: displacement head to center, 1 * 3 vector
     :param r_ht: displacement head to tail, 1 * 3 vector
@@ -294,15 +294,33 @@ def fast_fwd_ne(
     """
     omega = omega_im1 + q_dot * z_gl
     alpha = alpha_im1 + z_gl * q_ddot + pure_cross(omega, z_gl) * q_dot
-    acc = acc_e_im1 + pure_cross(alpha, - r_hc) +\
+    acc = acc_e_im1 + pure_cross(alpha, -r_hc) +\
           pure_cross(omega, pure_cross(omega, -r_hc))
     acc_e = acc_e_im1 + pure_cross(alpha, -r_ht) + \
-            pure_cross(omega, pure_cross(omega, - r_ht))
+            pure_cross(omega, pure_cross(omega, -r_ht))
     return omega, alpha, acc, acc_e
 
 
 @numba.jit(nopython=True)
-def fast_bwd_ne(m, acc, r_hc, r_tc, iT_gl, omega, alpha, f_ip1, tau_ip1, gravity):
+def fast_fwd_ne_prismatic(
+        z_gl, r_hc, r_ht, q_dot, q_ddot, omega_im1, alpha_im1, acc_e_im1
+    ):
+    """
+    Newton Euler operation in the forward iteration - prismatic joint
+    Comments refer to revolute case 'fast_fwd_ne_revolute'
+    """
+    omega = omega_im1
+    alpha = alpha_im1
+    acc_e = acc_e_im1 + q_ddot * z_gl + q_ddot * pure_cross(omega, z_gl) + pure_cross(alpha, -r_ht) +\
+            pure_cross(omega, q_dot * z_gl) + pure_cross(omega, pure_cross(omega_im1, -r_ht))
+    acc = acc_e + pure_cross(alpha, -r_hc) + pure_cross(omega, pure_cross(omega, -r_hc))
+    return omega, alpha, acc, acc_e
+
+
+@numba.jit(nopython=True)
+def fast_bwd_ne(
+    m, acc, r_hc, r_tc, iT_gl, omega, alpha, f_ip1, tau_ip1, gravity
+):
     """
     Newton Euler operation in the backward iteration
     :param m: mass, scalar
